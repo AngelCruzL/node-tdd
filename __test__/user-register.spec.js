@@ -73,4 +73,24 @@ describe('User register', () => {
         });
       });
   });
+
+  it('should store hashed user password in database', done => {
+    const username = 'user1';
+    const email = 'user1@mail.com';
+    const password = 'Secret123';
+
+    request(app)
+      .post('/api/1.0/users')
+      .send({ username, email, password })
+      .then(() => {
+        User.findAll().then(users => {
+          const insertedUser = users[0];
+
+          expect(insertedUser.username).toBe(username);
+          expect(insertedUser.email).toBe(email);
+          expect(insertedUser.password).not.toBe(password);
+          done();
+        });
+      });
+  });
 });
