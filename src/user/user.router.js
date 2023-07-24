@@ -1,38 +1,27 @@
 const router = require('express').Router();
+const { check, validationResult } = require('express-validator');
 
 const UserService = require('./user.service');
 
-function validateUsername(req, res, next) {
-  const user = req.body;
+router.post(
+  '',
+  check('username').notEmpty().withMessage('Username cannot be null'),
+  check('email').notEmpty().withMessage('Email cannot be null'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const validationErrors = {};
+      errors
+        .array()
+        .forEach(error => (validationErrors[error.path] = error.msg));
 
-  if (user.username === null) {
-    req.validationErrors = {
-      username: 'Username cannot be null',
-    };
-  }
-  next();
-}
+      return res.status(400).send({ validationErrors });
+    }
 
-function validateEmail(req, res, next) {
-  const user = req.body;
+    await UserService.save(req.body);
 
-  if (user.email === null) {
-    req.validationErrors = {
-      ...req.validationErrors,
-      email: 'Email cannot be null',
-    };
-  }
-  next();
-}
-
-router.post('', validateUsername, validateEmail, async (req, res) => {
-  if (req.validationErrors) {
-    return res.status(400).send({ validationErrors: req.validationErrors });
-  }
-
-  await UserService.save(req.body);
-
-  return res.send({ message: 'User created successfully' });
-});
+    return res.send({ message: 'User created successfully' });
+  },
+);
 
 module.exports = router;
