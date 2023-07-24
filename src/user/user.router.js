@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { check, validationResult } = require('express-validator');
 
+const User = require('./User');
 const UserService = require('./user.service');
 
 router.post(
@@ -16,7 +17,12 @@ router.post(
     .withMessage('Email cannot be null')
     .bail()
     .isEmail()
-    .withMessage('Email is not valid'),
+    .withMessage('Email is not valid')
+    .bail()
+    .custom(async email => {
+      const user = await UserService.findByEmail(email);
+      if (user) throw new Error('Email already in use');
+    }),
   check('password')
     .notEmpty()
     .withMessage('Password cannot be null')

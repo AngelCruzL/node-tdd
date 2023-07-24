@@ -9,4 +9,8 @@ async function save(body) {
   await User.create(user);
 }
 
-module.exports = { save };
+async function findByEmail(email) {
+  return await User.findOne({ where: { email } });
+}
+
+module.exports = { save, findByEmail };

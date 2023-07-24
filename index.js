@@ -2,7 +2,7 @@ const app = require('./src/app');
 const sequelize = require('./src/config/database');
 const { PORT, NODE_ENV } = require('./src/config/constants');
 
-sequelize.sync();
+sequelize.sync({ force: true });
 
 const port = PORT ?? 3000;
 
