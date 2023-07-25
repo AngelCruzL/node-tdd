@@ -1,0 +1,11 @@
+{
+  "username_null_error_message": "El usuario no puede estar vacío",
+  "username_size_error_message": "El usuario debe tener entre 4 y 32 caracteres",
+  "email_null_error_message": "El correo electrónico no puede estar vacío",
+  "email_invalid_error_message": "El correo electrónico no es válido",
+  "email_inuse_error_message": "El correo electrónico ya está en uso",
+  "password_null_error_message": "La contraseña no puede estar vacía",
+  "password_size_error_message": "La contraseña debe tener al menos 6 caracteres",
+  "password_pattern_error_message": "La contraseña debe tener al menos 1 mayúscula, 1 minúscula y 1 número",
+  "user_create_success_message": "Usuario creado con éxito"
+}

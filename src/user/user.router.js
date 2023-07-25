@@ -1,53 +1,50 @@
 const router = require('express').Router();
 const { check, validationResult } = require('express-validator');
 
-const User = require('./User');
 const UserService = require('./user.service');
 
 router.post(
   '',
   check('username')
     .notEmpty()
-    .withMessage('Username cannot be null')
+    .withMessage('username_null_error_message')
     .bail()
     .isLength({ min: 4, max: 32 })
-    .withMessage('Must have min 4 and max 32 characters'),
+    .withMessage('username_size_error_message'),
   check('email')
     .notEmpty()
-    .withMessage('Email cannot be null')
+    .withMessage('email_null_error_message')
     .bail()
     .isEmail()
-    .withMessage('Email is not valid')
+    .withMessage('email_invalid_error_message')
     .bail()
     .custom(async email => {
       const user = await UserService.findByEmail(email);
-      if (user) throw new Error('Email already in use');
+      if (user) throw new Error('email_inuse_error_message');
     }),
   check('password')
     .notEmpty()
-    .withMessage('Password cannot be null')
+    .withMessage('password_null_error_message')
     .bail()
     .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters')
+    .withMessage('password_size_error_message')
     .bail()
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/)
-    .withMessage(
-      'Password must have at least 1 uppercase, 1 lowercase letter and 1 number',
-    ),
+    .withMessage('password_pattern_error_message'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const validationErrors = {};
       errors
         .array()
-        .forEach(error => (validationErrors[error.path] = error.msg));
+        .forEach(error => (validationErrors[error.path] = req.t(error.msg)));
 
       return res.status(400).send({ validationErrors });
     }
 
     await UserService.save(req.body);
 
-    return res.send({ message: 'User created successfully' });
+    return res.send({ message: req.t('user_create_success_message') });
   },
 );
 
