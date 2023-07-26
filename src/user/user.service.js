@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
+const EmailService = require('../email/email.service');
 const User = require('./User');
 
 async function save({ username, email, password }) {
@@ -11,7 +12,9 @@ async function save({ username, email, password }) {
     password: hashedPassword,
     activationToken: generateActivationToken(16),
   };
+  
   await User.create(user);
+  await EmailService.sendActivationEmail(email, user.activationToken);
 }
 
 async function findByEmail(email) {
