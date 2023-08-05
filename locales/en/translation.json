@@ -7,5 +7,6 @@
   "password_null_error_message": "Password cannot be null",
   "password_size_error_message": "Password must be at least 6 characters",
   "password_pattern_error_message": "Password must have at least 1 uppercase, 1 lowercase letter and 1 number",
-  "user_create_success_message": "User created successfully"
+  "user_create_success_message": "User created successfully",
+  "send_email_error_message": "Error sending email"
 }

@@ -4,6 +4,7 @@ const nodemailerStub = require('nodemailer-stub');
 const app = require('../src/app');
 const sequelize = require('../src/config/database');
 const User = require('../src/user/User');
+const EmailService = require('../src/email/email.service');
 
 beforeAll(() => sequelize.sync());
 
@@ -191,6 +192,44 @@ describe('User register', () => {
     expect(lastMail.to[0]).toBe(email);
     expect(lastMail.content).toContain(savedUser.activationToken);
   });
+
+  it('should return a 502 Bad Gateway when the email send fails', async () => {
+    const mockSendActivationEmail = jest
+      .spyOn(EmailService, 'sendActivationEmail')
+      .mockRejectedValueOnce({
+        message: 'Error sending email',
+      });
+    const response = await postUser();
+
+    expect(response.status).toBe(502);
+    mockSendActivationEmail.mockRestore();
+  });
+
+  it('should return "Error sending email" when the email send fails', async () => {
+    const mockSendActivationEmail = jest
+      .spyOn(EmailService, 'sendActivationEmail')
+      .mockRejectedValueOnce({
+        message: 'Error sending email',
+      });
+    const response = await postUser();
+
+    expect(response.body.message).toBe('Error sending email');
+    mockSendActivationEmail.mockRestore();
+  });
+
+  it('should not save the user in the database if the activation email fails', async () => {
+    const mockSendActivationEmail = jest
+      .spyOn(EmailService, 'sendActivationEmail')
+      .mockRejectedValueOnce({
+        message: 'Error sending email',
+      });
+    await postUser();
+
+    mockSendActivationEmail.mockRestore();
+    const users = await User.findAll();
+
+    expect(users.length).toBe(0);
+  });
 });
 
 describe('Internationalization', () => {
@@ -206,6 +245,7 @@ describe('Internationalization', () => {
   const password_pattern_error_message =
     'La contraseña debe tener al menos 1 mayúscula, 1 minúscula y 1 número';
   const user_create_success_message = 'Usuario creado con éxito';
+  const send_email_error_message = 'Error al enviar el correo electrónico';
 
   it.each`
     field         | value              | expectedMessage
@@ -252,5 +292,17 @@ describe('Internationalization', () => {
     const response = await postUser({ ...validUser }, { language: 'es' });
 
     expect(response.body.message).toBe(user_create_success_message);
+  });
+
+  it(`should return "${send_email_error_message}" when the email send fails and the language is set to Spanish`, async () => {
+    const mockSendActivationEmail = jest
+      .spyOn(EmailService, 'sendActivationEmail')
+      .mockRejectedValueOnce({
+        message: 'Error sending email',
+      });
+    const response = await postUser({ ...validUser }, { language: 'es' });
+
+    expect(response.body.message).toBe(send_email_error_message);
+    mockSendActivationEmail.mockRestore();
   });
 });
