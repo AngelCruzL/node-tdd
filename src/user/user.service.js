@@ -19,7 +19,11 @@ async function save({ username, email, password }) {
 
   await User.create(user);
   try {
-    await EmailService.sendActivationEmail(email, user.activationToken);
+    await EmailService.sendActivationEmail(
+      email,
+      user.username,
+      user.activationToken,
+    );
     await transaction.commit();
   } catch (err) {
     await transaction.rollback();
