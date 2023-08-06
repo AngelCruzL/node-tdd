@@ -51,4 +51,16 @@ router.post(
   },
 );
 
+router.post('/token/:token', async (req, res) => {
+  const { token } = req.params;
+
+  try {
+    await UserService.activate(token);
+  } catch (err) {
+    return res.status(400).send({ message: req.t(err.message) });
+  }
+
+  res.send({ message: req.t('account_activation_success_message') });
+});
+
 module.exports = router;

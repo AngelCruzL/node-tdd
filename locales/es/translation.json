@@ -8,5 +8,7 @@
   "password_size_error_message": "La contraseña debe tener al menos 6 caracteres",
   "password_pattern_error_message": "La contraseña debe tener al menos 1 mayúscula, 1 minúscula y 1 número",
   "user_create_success_message": "Usuario creado con éxito",
-  "send_email_error_message": "Error al enviar el correo electrónico"
+  "send_email_error_message": "Error al enviar el correo electrónico",
+  "account_activation_invalid_token": "La cuenta no fue activada. Por favor, compruebe su token",
+  "account_activation_success_message": "La cuenta fue activada satisfactoriamente"
 }
