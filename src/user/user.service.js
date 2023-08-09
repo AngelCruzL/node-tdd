@@ -17,7 +17,7 @@ async function save({ username, email, password }) {
     activationToken: generateActivationToken(16),
   };
 
-  await User.create(user);
+  await User.create(user, { transaction });
   try {
     await EmailService.sendActivationEmail(
       email,

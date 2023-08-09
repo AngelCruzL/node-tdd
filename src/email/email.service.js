@@ -16,10 +16,6 @@ async function sendActivationEmail(email, username, token) {
   });
 
   if (process.env.NODE_ENV === 'development') {
-    const nodemailer = require('nodemailer');
-    console.log(
-      'Mocked email URL: ' + nodemailer.getTestMessageUrl(emailInformation),
-    );
     console.log({ emailInformation });
   }
 }
