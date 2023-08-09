@@ -34,14 +34,14 @@ beforeAll(async () => {
   await sequelize.sync();
 });
 
-afterAll(async () => {
-  await server.close();
-});
-
 beforeEach(() => {
   simulateSmtpFailure = false;
 
   return User.destroy({ truncate: true });
+});
+
+afterAll(async () => {
+  await server.close();
 });
 
 const username = 'user1';
@@ -217,7 +217,7 @@ describe('User register', () => {
     expect(savedUser.activationToken).toBeTruthy();
   });
 
-  it('should send an account activation email with activationUser', async () => {
+  it('should send an account activation email with activationToken', async () => {
     await postUser();
     const users = await User.findAll();
     const savedUser = users[0];

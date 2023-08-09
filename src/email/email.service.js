@@ -1,9 +1,10 @@
 const transporter = require('../config/email-transporter');
+const { EMAIL_USER } = require('../config/constants');
 
 async function sendActivationEmail(email, username, token) {
   // TODO: Fix the link in the email
   const emailInformation = await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: EMAIL_USER,
     to: email,
     subject: 'Account activation',
     html: `Hello ${username},
@@ -14,7 +15,11 @@ async function sendActivationEmail(email, username, token) {
     </a>`,
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'development') {
+    const nodemailer = require('nodemailer');
+    console.log(
+      'Mocked email URL: ' + nodemailer.getTestMessageUrl(emailInformation),
+    );
     console.log({ emailInformation });
   }
 }
