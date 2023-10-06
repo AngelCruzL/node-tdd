@@ -24,4 +24,5 @@ module.exports = {
   EMAIL_PORT,
   EMAIL_USER,
   EMAIL_PASS,
+  DEFAULT_USERS_PER_PAGE: 10,
 };

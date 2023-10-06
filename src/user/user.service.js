@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const sequelize = require('../config/database');
+const { DEFAULT_USERS_PER_PAGE } = require('../config/constants');
 const EmailException = require('../email/email.exception');
 const InvalidTokenException = require('./invalid-token.exception');
 const EmailService = require('../email/email.service');
@@ -49,7 +50,8 @@ async function activate(activationToken) {
 }
 
 async function getUsers() {
-  const users = await User.findAll({
+  const pageSize = DEFAULT_USERS_PER_PAGE;
+  const { rows: users, count: activeUserCount } = await User.findAndCountAll({
     where: { inactive: false },
     attributes: ['id', 'username', 'email'],
     limit: 10,
@@ -59,7 +61,7 @@ async function getUsers() {
     content: users,
     page: 0,
     size: 10,
-    totalPages: 0,
+    totalPages: Math.ceil(activeUserCount / pageSize),
   };
 }
 

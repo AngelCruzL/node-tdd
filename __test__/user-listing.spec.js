@@ -65,4 +65,11 @@ describe('Listing Users', () => {
 
     expect(response.body.content.length).toBe(6);
   });
+
+  it('should return "2" as totalPages value when we have more than 10 active users', async () => {
+    await addUsers(11, 5);
+    const response = await getUsers();
+
+    expect(response.body.totalPages).toBe(2);
+  });
 });
