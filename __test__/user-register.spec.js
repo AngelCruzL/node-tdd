@@ -327,6 +327,7 @@ describe('Internationalization', () => {
 
     expect(response.body.message).toBe(send_email_error_message);
   });
+
   it(`should ${validation_failure_message} message if returns an error in the response body when validation fails`, async () => {
     const response = await postUser(
       {
@@ -410,4 +411,51 @@ describe('Account activation', () => {
       expect(response.body.message).toBe(message);
     },
   );
+});
+
+describe('Error Model', () => {
+  it('should return the path in the error response body', async () => {
+    const token = 'this-token-does-not-exist';
+    const response = await request(app)
+      .post(`/api/1.0/users/token/${token}`)
+      .send();
+    const body = response.body;
+
+    expect(body.path).toBe(`/api/1.0/users/token/${token}`);
+  });
+
+  it('should return the timestamp in milliseconds within 5 seconds value in error response body', async () => {
+    const nowInMillis = new Date().getTime();
+    const fiveSecondsLater = nowInMillis + 5 * 1000;
+    const token = 'this-token-does-not-exist';
+    const response = await request(app)
+      .post(`/api/1.0/users/token/${token}`)
+      .send();
+    const body = response.body;
+
+    expect(body.timestamp).toBeGreaterThan(nowInMillis);
+    expect(body.timestamp).toBeLessThan(fiveSecondsLater);
+  });
+
+  it('should return the path, timestamp, message and validationErrors in the response when validation failure', async () => {
+    const response = await postUser({ ...validUser, username: null });
+    const body = response.body;
+
+    expect(Object.keys(body)).toEqual([
+      'path',
+      'timestamp',
+      'message',
+      'validationErrors',
+    ]);
+  });
+
+  it('should return path, timestamp and message if the requests fails other than validation error', async () => {
+    const token = 'this-token-does-not-exist';
+    const response = await request(app)
+      .post(`/api/1.0/users/token/${token}`)
+      .send();
+    const body = response.body;
+
+    expect(Object.keys(body)).toEqual(['path', 'timestamp', 'message']);
+  });
 });
