@@ -49,17 +49,18 @@ async function activate(activationToken) {
   await user.save();
 }
 
-async function getUsers() {
+async function getUsers(page) {
   const pageSize = DEFAULT_USERS_PER_PAGE;
   const { rows: users, count: activeUserCount } = await User.findAndCountAll({
     where: { inactive: false },
     attributes: ['id', 'username', 'email'],
     limit: 10,
+    offset: page * pageSize,
   });
 
   return {
     content: users,
-    page: 0,
+    page,
     size: 10,
     totalPages: Math.ceil(activeUserCount / pageSize),
   };
