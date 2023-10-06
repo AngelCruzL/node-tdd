@@ -10,5 +10,6 @@
   "user_create_success_message": "User created successfully",
   "send_email_error_message": "Error sending email",
   "account_activation_invalid_token": "The account was not activated. Please check your token",
-  "account_activation_success_message": "The account was activated successfully"
+  "account_activation_success_message": "The account was activated successfully",
+  "validation_failure_message": "Validation failed"
 }

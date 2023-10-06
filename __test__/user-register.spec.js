@@ -247,6 +247,15 @@ describe('User register', () => {
 
     expect(users.length).toBe(0);
   });
+  it('should return "Validation failed" if returns an error in the response body when validation fails', async () => {
+    const response = await postUser({
+      username: null,
+      email,
+      password,
+    });
+
+    expect(response.body.message).toBe('Validation failed');
+  });
 });
 
 describe('Internationalization', () => {
@@ -263,6 +272,7 @@ describe('Internationalization', () => {
     'La contraseña debe tener al menos 1 mayúscula, 1 minúscula y 1 número';
   const user_create_success_message = 'Usuario creado con éxito';
   const send_email_error_message = 'Error al enviar el correo electrónico';
+  const validation_failure_message = 'Error de validación';
 
   it.each`
     field         | value              | expectedMessage
@@ -316,6 +326,18 @@ describe('Internationalization', () => {
     const response = await postUser({ ...validUser }, { language: 'es' });
 
     expect(response.body.message).toBe(send_email_error_message);
+  });
+  it(`should ${validation_failure_message} message if returns an error in the response body when validation fails`, async () => {
+    const response = await postUser(
+      {
+        username: null,
+        email,
+        password,
+      },
+      { language: 'es' },
+    );
+
+    expect(response.body.message).toBe(validation_failure_message);
   });
 });
 
