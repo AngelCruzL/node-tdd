@@ -3,6 +3,7 @@ const { check, validationResult } = require('express-validator');
 
 const UserService = require('./user.service');
 const ValidationException = require('../error/validation.exception');
+const { pagination } = require('../middlewares/pagination');
 
 router.post(
   '',
@@ -58,11 +59,9 @@ router.post('/token/:token', async (req, res, next) => {
   }
 });
 
-router.get('', async (req, res) => {
-  let page = req.query.page ? +req.query.page : 0;
-  if (page < 0) page = 0;
-  const users = await UserService.getUsers(page);
-
+router.get('', pagination, async (req, res) => {
+  const { page, size } = req.pagination;
+  const users = await UserService.getUsers(page, size);
   res.send(users);
 });
 
