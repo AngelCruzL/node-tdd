@@ -11,5 +11,6 @@
   "send_email_error_message": "Error al enviar el correo electrónico",
   "account_activation_invalid_token": "La cuenta no fue activada. Por favor, compruebe su token",
   "account_activation_success_message": "La cuenta fue activada satisfactoriamente",
-  "validation_failure_message": "Error de validación"
+  "validation_failure_message": "Error de validación",
+  "user_not_found_message": "Usuario no encontrado"
 }

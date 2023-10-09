@@ -122,3 +122,36 @@ describe('Listing Users', () => {
     expect(response.body.size).toBe(10);
   });
 });
+
+describe('Get User', () => {
+  it('should return a 404 status code when the user is not found', async () => {
+    const response = await request(app).get('/api/1.0/users/5');
+
+    expect(response.status).toBe(404);
+  });
+
+  it.each`
+    language | message
+    ${'en'}  | ${'User not found'}
+    ${'es'}  | ${'Usuario no encontrado'}
+  `(
+    'should return "$message" when the user is not found and language is set to "$language"',
+    async ({ language, message }) => {
+      const response = await request(app)
+        .get('/api/1.0/users/5')
+        .set('Accept-Language', language);
+
+      expect(response.body.message).toBe(message);
+    },
+  );
+
+  it('should return the proper error body when the user is not found', async () => {
+    const nowInMillis = new Date().getTime();
+    const response = await request(app).get('/api/1.0/users/5');
+    const error = response.body;
+
+    expect(error.path).toBe('/api/1.0/users/5');
+    expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
+  });
+});

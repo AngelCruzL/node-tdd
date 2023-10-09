@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const { check, validationResult } = require('express-validator');
 
-const UserService = require('./user.service');
 const ValidationException = require('../error/validation.exception');
 const { pagination } = require('../middlewares/pagination');
+const UserService = require('./user.service');
+const UserNotFoundException = require('./user-not-found.exception');
 
 router.post(
   '',
@@ -63,6 +64,10 @@ router.get('', pagination, async (req, res) => {
   const { page, size } = req.pagination;
   const users = await UserService.getUsers(page, size);
   res.send(users);
+});
+
+router.get('/:id', async (req, res, next) => {
+  next(new UserNotFoundException());
 });
 
 module.exports = router;
