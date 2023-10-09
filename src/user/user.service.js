@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const sequelize = require('../config/database');
-const { DEFAULT_USERS_PER_PAGE } = require('../config/constants');
 const EmailException = require('../email/email.exception');
 const InvalidTokenException = require('./invalid-token.exception');
+const UserNotFoundException = require('./user-not-found.exception');
 const EmailService = require('../email/email.service');
 const User = require('./User');
 
@@ -65,4 +65,14 @@ async function getUsers(page, size) {
   };
 }
 
-module.exports = { save, findByEmail, activate, getUsers };
+async function getUser(id) {
+  const user = await User.findOne({
+    where: { id, inactive: false },
+    attributes: ['id', 'username', 'email'],
+  });
+  if (!user) throw new UserNotFoundException();
+
+  return user;
+}
+
+module.exports = { save, findByEmail, activate, getUsers, getUser };

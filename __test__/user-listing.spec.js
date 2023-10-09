@@ -124,8 +124,12 @@ describe('Listing Users', () => {
 });
 
 describe('Get User', () => {
+  const getUser = async (id = 5) => {
+    return request(app).get(`/api/1.0/users/${id}`);
+  };
+
   it('should return a 404 status code when the user is not found', async () => {
-    const response = await request(app).get('/api/1.0/users/5');
+    const response = await getUser();
 
     expect(response.status).toBe(404);
   });
@@ -147,11 +151,47 @@ describe('Get User', () => {
 
   it('should return the proper error body when the user is not found', async () => {
     const nowInMillis = new Date().getTime();
-    const response = await request(app).get('/api/1.0/users/5');
+    const response = await getUser();
     const error = response.body;
 
     expect(error.path).toBe('/api/1.0/users/5');
-    expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    expect(error.timestamp).toBeGreaterThanOrEqual(nowInMillis);
     expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message']);
+  });
+
+  it('should return status 200 when an active user exist', async () => {
+    const user = await User.create({
+      username: 'user1',
+      email: 'test1@mail.com',
+      inactive: false,
+    });
+    const response = await getUser(user.id);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should return "id", "username" & "email" when an active user exist', async () => {
+    const user = await User.create({
+      username: 'user1',
+      email: 'test1@mail.com',
+      inactive: false,
+    });
+    const response = await getUser(user.id);
+    const { id, username, email } = response.body;
+
+    expect(id).toBe(user.id);
+    expect(username).toBe(user.username);
+    expect(email).toBe(user.email);
+  });
+
+  it('should return status 404 when an inactive user is requested', async () => {
+    const user = await User.create({
+      username: 'user1',
+      email: 'test1@mail.com',
+      inactive: true,
+    });
+    const response = await getUser(user.id);
+
+    expect(response.status).toBe(404);
   });
 });

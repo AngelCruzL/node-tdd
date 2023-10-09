@@ -67,7 +67,12 @@ router.get('', pagination, async (req, res) => {
 });
 
 router.get('/:id', async (req, res, next) => {
-  next(new UserNotFoundException());
+  try {
+    const user = await UserService.getUser(req.params.id);
+    res.send(user);
+  } catch (err) {
+    next(new UserNotFoundException());
+  }
 });
 
 module.exports = router;
